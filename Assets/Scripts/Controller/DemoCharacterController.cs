@@ -77,7 +77,7 @@ public class DemoCharacterController : MonoBehaviour
     private float _animationBlend;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
-    private float _verticalVelocity;
+    private float _verticalVelocity; // 수직 속도 -> 점프에서 활용
     private float _terminalVelocity = 53.0f;
     private bool _rotateOnMove = true;
 
@@ -86,11 +86,11 @@ public class DemoCharacterController : MonoBehaviour
     private float _fallTimeoutDelta;
 
     // animation IDs
-    private int _animIDSpeed;
+    private int _animIDSpeed; // 블렌드 트리의 블렌드 값
     private int _animIDGrounded;
     private int _animIDJump;
     private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
+    private int _animIDMotionSpeed; //블렌드 트리의 멀티플라이어 값으로 쓰임
 
     private PlayerInput _playerInput; //큰 의미X 애니 속도 체크
     private Animator _animator;
@@ -113,7 +113,11 @@ public class DemoCharacterController : MonoBehaviour
 #endif
         }
     }
-
+    private void Awake()
+    {
+        if (_mainCamera == null)
+            _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+    }
     void Start()
     {
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
@@ -134,7 +138,7 @@ public class DemoCharacterController : MonoBehaviour
     {
         _hasAnimator = TryGetComponent(out _animator);
 
-        JumpAndGravity();
+        JumpAndGravity(); // 수직 이동 값이 여기서 나와야 Move에서 사용할 수 있음.
         GroundedCheck();
         Move();
     }
@@ -146,16 +150,11 @@ public class DemoCharacterController : MonoBehaviour
 
     private void AssignAnimationIDs() // 애니메이션 id를 string에서int로
     {
-        _animIDSpeed = Animator.StringToHash("Speed"); 
+        _animIDSpeed = Animator.StringToHash("Speed"); // 블렌드 트리에 쓰이는 값
+        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         _animIDGrounded = Animator.StringToHash("Grounded");
         _animIDJump = Animator.StringToHash("Jump");
-        _animIDFreeFall = Animator.StringToHash("FreeFall");
-        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-    }
-
-    private void JumpAndGravity()
-    {
-        throw new NotImplementedException();
+        _animIDFreeFall = Animator.StringToHash("Fall");
     }
 
     private void GroundedCheck()
@@ -197,11 +196,140 @@ public class DemoCharacterController : MonoBehaviour
             _cinemachineTargetYaw, 0.0f);
     }
 
-    private void Move() //TODO
+    private void Move()
     {
-        throw new NotImplementedException();
+        // 달리는 중이면 RunSpeed, 아니면 MoveSpeed
+        float targetSpeed = _input.run ? RunSpeed : MoveSpeed;
+
+        // 입력 없음 목표 속도 == 0;
+        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+        // 수평 속도(벡터 길이) 계산
+        float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
+
+        float speedOffset = 0.1f;
+        float inputMagnitude = _input.move.magnitude;
+
+        // 지금 수평 속도가 목표속도-0.1~목표속도+0.1 벗어나면 
+        if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+            currentHorizontalSpeed > targetSpeed + speedOffset)
+        {
+            // (목표속도*인풋크기)로 Lerp시킴
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                Time.deltaTime * SpeedChangeRate);
+
+            // 1000.123f => 1000.0f
+            _speed = Mathf.Round(_speed * 1000f) / 1000f;
+        }
+        else // 지금 수평 속도가 목표속도-0.1~목표속도+0.1 안에 들어오면 속도 그냥 목표속도로 고정 
+        {
+            _speed = targetSpeed;
+        }
+
+        // 애니메이션 블렌드 값 조절
+        _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
+        if (_animationBlend < 0.01f) _animationBlend = 0f; // 블렌드 값은 아무리 높아도 상관 없음
+
+        // 입력 방향 정규화
+        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+        if (_input.move != Vector2.zero)
+        {
+            // x와 z방향 값으로 y축 회전 값을 구해냄 | 카메라 방향을 더해서 카메라 방향 기준 회전 방향 구함
+            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
+                              _mainCamera.transform.eulerAngles.y;
+            // 부드러운 회전을 위한 값을 구함
+            float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
+                RotationSmoothTime);
+
+            // 최종 회전
+            if (_rotateOnMove)
+                transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+        }
+
+        // 오일러 각도에 forward를 곱하면 방향이 나오는구나..?? 충격
+        Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+
+        // 수평 이동 값 + 수직 이동 값
+        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+        // 블렌드 값으로 
+        if (_hasAnimator)
+        {
+            _animator.SetFloat(_animIDSpeed, _animationBlend); //TODO 블렌드는 그냥 blend라고 명시하는게 나을듯
+            _animator.SetFloat(_animIDMotionSpeed, inputMagnitude); 
+        }
     }
 
+    private void JumpAndGravity()
+    {
+        if (Grounded)
+        {
+            // 낙하 상태 돌입까지의 시간 대입
+            _fallTimeoutDelta = FallTimeout;
+
+            // 점프, 낙하 애니메이션 비활성화
+            if (_hasAnimator)
+            {
+                _animator.SetBool(_animIDJump, false);
+                _animator.SetBool(_animIDFreeFall, false);
+            }
+
+            // 수직 속도 -2로 해서 땅에 붙어있게 함
+            if (_verticalVelocity < 0.0f)
+            {
+                _verticalVelocity = -2f;
+            }
+
+            // 점프 로직
+            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
+            {
+                // 수직 속도 계산
+                _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+
+                // 점프 애니메이션 활성화
+                if (_hasAnimator)
+                {
+                    _animator.SetBool(_animIDJump, true);
+                }
+            }
+
+            // 점프 타이머 활성화
+            // 지면에 착지 후에 일정 시간 흐른 후에 점프가 가능하도록 함
+            if (_jumpTimeoutDelta >= 0.0f)
+            {
+                _jumpTimeoutDelta -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            // 점프 타이머 재설정
+            _jumpTimeoutDelta = JumpTimeout;
+
+            // _fallTimeoutDelta이 0보다 작아지면 낙하 애니메이션 활성화
+            if (_fallTimeoutDelta >= 0.0f)
+            {
+                _fallTimeoutDelta -= Time.deltaTime;
+            }
+            else
+            {
+                if (_hasAnimator)
+                {
+                    _animator.SetBool(_animIDFreeFall, true);
+                }
+            }
+
+            // 공중에 있을 때 불필요한 점프 방지
+            _input.jump = false;
+        }
+
+        // 수직 속도가 최대 속도보다 작은 경우
+        if (_verticalVelocity < _terminalVelocity)
+        {
+            _verticalVelocity += Gravity * Time.deltaTime; // 수직 속도 프레임마다 중력만큼 감소 
+        }
+    }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
@@ -210,4 +338,22 @@ public class DemoCharacterController : MonoBehaviour
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
+
+
+    private void OnDrawGizmosSelected() // 땅에 있을 땐 초록 / 아니면 빨강
+    {
+        Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
+        Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
+
+        if (Grounded) Gizmos.color = transparentGreen;
+        else Gizmos.color = transparentRed;
+
+        // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
+        Gizmos.DrawSphere(
+            new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
+            GroundedRadius);
+    }
+
+    public void SetSensitivity(float newSensitivity) => Sensitivity = newSensitivity;
+    public void SetRotateOnMove(bool newRotateOnMove) => _rotateOnMove = newRotateOnMove;
 }

@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Cinemachine;
 using StarterAssets;
+using UnityEngine;
 
-public class ThirdPersonShooterController : MonoBehaviour
+public class DemoCharacterLogic : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera playerAimCamera;
     [SerializeField] private float zoomOutSensitivity;
@@ -14,14 +12,14 @@ public class ThirdPersonShooterController : MonoBehaviour
     [SerializeField] private Transform preProjectile;
     [SerializeField] private Transform projectileSpawnPosition;
 
-    private StarterAssetsInputs starterAssetsInputs;
-    private ThirdPersonController thirdPersonController;
+    private DemoCharacterInputs demoCharacterInputs;
+    private DemoCharacterController demoCharacterController;
     private Animator animator;
 
     private void Awake()
     {
-        starterAssetsInputs = GetComponent<StarterAssetsInputs>();
-        thirdPersonController = GetComponent<ThirdPersonController>();
+        demoCharacterInputs = GetComponent<DemoCharacterInputs>();
+        demoCharacterController = GetComponent<DemoCharacterController>();
         animator = GetComponent<Animator>();
     }
 
@@ -38,10 +36,10 @@ public class ThirdPersonShooterController : MonoBehaviour
         }
 
         // 조준 간단 구현
-        if (starterAssetsInputs.aim)
+        if (demoCharacterInputs.aim)
         {
-            playerAimCamera.gameObject.SetActive(true);            
-            thirdPersonController.SetSensitivity(zoomInSensitivity);
+            playerAimCamera.gameObject.SetActive(true);
+            demoCharacterController.SetSensitivity(zoomInSensitivity);
 
             Vector3 worldAimTarget = mouseWorldPosition;
             worldAimTarget.y = transform.position.y; // 캐릭터랑 높이 맞추기
@@ -49,24 +47,24 @@ public class ThirdPersonShooterController : MonoBehaviour
 
             transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
 
-            thirdPersonController.SetRotateOnMove(false);
+            demoCharacterController.SetRotateOnMove(false);
 
             animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
         }
         else
         {
             playerAimCamera.gameObject.SetActive(false);
-            thirdPersonController.SetSensitivity(zoomOutSensitivity);
+            demoCharacterController.SetSensitivity(zoomOutSensitivity);
 
-            thirdPersonController.SetRotateOnMove(true);
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1),0f,Time.deltaTime * 10f));
+            demoCharacterController.SetRotateOnMove(true);
+            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
         }
 
-        if(starterAssetsInputs.fire)
+        /*if (demoCharacterInputs.shoot)
         {
             Vector3 vector3 = (mouseWorldPosition - projectileSpawnPosition.position).normalized;
             Instantiate(preProjectile, projectileSpawnPosition.position, Quaternion.LookRotation(vector3, Vector3.up));
-            starterAssetsInputs.fire = false; // 보조
-        }
+            demoCharacterInputs.shoot = false; // 보조
+        }*/
     }
 }

@@ -17,6 +17,9 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private GameObject crosshair;
     [SerializeField] private Rig rigHandLayer;
     [SerializeField] private Rig rigSpineLayer;
+    [SerializeField] float shootTimeout = 0.3f;
+
+    private float shootTimeoutDelta;
 
     private PlayerInputs _inputs;
     private PlayerController controller;
@@ -30,11 +33,16 @@ public class PlayerManager : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
+    private void Start()
+    {
+        shootTimeoutDelta = shootTimeout;
+    }
+
     void Update()
     {
         AimCheck();
 
-
+        shootTimeoutDelta += Time.deltaTime;
 
         /*if (demoCharacterInputs.shoot)
         {
@@ -96,10 +104,14 @@ public class PlayerManager : MonoBehaviour
 
             // TODO 이런 코드들 컨트롤러 부분으로 빼버리기, 여기서는 입력 확인과 메서드 호출 위주로
             if (_inputs.shoot) // 발사 중인가 
-                animator.SetBool("Shoot", true);
-            else
-                animator.SetBool("Shoot", false);
-            
+            {
+                if(shootTimeout < shootTimeoutDelta)
+                {
+                    shootTimeoutDelta = 0f;
+                    animator.SetTrigger("Shoot");
+                }
+                
+            }            
         }
         else // No Aiming
         {
@@ -136,5 +148,11 @@ public class PlayerManager : MonoBehaviour
     {
         rigHandLayer.weight = value;
         rigSpineLayer.weight = value;
+    }
+
+    public void OnFire()
+    {
+        Debug.Log("Shoot Event");
+        GameManager.instance.Shoot(aimObj.position);
     }
 }

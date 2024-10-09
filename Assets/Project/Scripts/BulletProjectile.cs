@@ -5,7 +5,7 @@ using UnityEngine;
 public class BulletProjectile : MonoBehaviour
 {
     private Rigidbody rigidbody;
-    float speed = 10;
+    float speed = 30;
 
     private void Awake()
     {

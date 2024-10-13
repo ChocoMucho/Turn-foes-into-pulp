@@ -31,11 +31,13 @@ public class PlayerManager : MonoBehaviour
         _inputs = GetComponent<PlayerInputs>();
         controller = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
+        PoolManager poolManager = PoolManager.Instance;
     }
 
     private void Start()
     {
         shootTimeoutDelta = shootTimeout;
+        
     }
 
     void Update()

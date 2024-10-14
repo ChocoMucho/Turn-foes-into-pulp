@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject bulletProjectile;
     [SerializeField] private Transform muzzle;
     [SerializeField] float shootTimeout = 0.2f;
+    [SerializeField] NavMeshSurface meshSurface;
     
     private float shootTimeoutDelta = 0.2f;
 
@@ -16,6 +18,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        meshSurface.BuildNavMesh();
     }
 
     // 실제 반동주는 기능 구현하자. 지금은 애니메이션 속도에 굉장히 묶여있다.

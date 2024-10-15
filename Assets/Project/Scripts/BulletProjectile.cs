@@ -29,10 +29,14 @@ public class BulletProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Target>() != null)
-            Debug.Log("타겟에 명중");
-        else
-            Debug.Log("감나빗");
-        //Destroy(gameObject);
+        if(other.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            IBattle battle = other.GetComponent<IBattle>();
+            if(battle != null)
+            {
+                battle.OnDamage(GameManager.instance.Player.GetComponent<PlayerManager>().Damage); // 진짜 너무 더럽다.
+            }
+        }
+        Destroy(gameObject);
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6375521316334112891}
   - component: {fileID: 2808932905958139301}
   - component: {fileID: 2068988142734397397}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BulletLite_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5618238274682736690}
   - component: {fileID: 2724388513960625630}
   - component: {fileID: 6146641247475842367}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BulletLite_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: -4131680002435877355}
   - component: {fileID: 5939405663520243453}
   - component: {fileID: 7250537039676736667}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BulletLite
   m_TagString: Untagged
   m_Icon: {fileID: 0}

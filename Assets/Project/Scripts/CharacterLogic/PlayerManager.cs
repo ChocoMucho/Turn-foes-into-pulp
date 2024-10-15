@@ -3,8 +3,9 @@ using StarterAssets;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 using UnityEngine.Windows;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : MonoBehaviour, IBattle
 {
     [SerializeField] private CinemachineVirtualCamera playerAimCamera;
     [SerializeField] private float zoomOutSensitivity;
@@ -18,6 +19,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Rig rigHandLayer;
     [SerializeField] private Rig rigSpineLayer;
     [SerializeField] float shootTimeout = 0.3f;
+    [SerializeField] private EntityData _data;
+    [SerializeField] private GameObject _mob; // 이거 지워야 됨
 
     private float shootTimeoutDelta;
 
@@ -26,18 +29,30 @@ public class PlayerManager : MonoBehaviour
     private Animator animator;
     private Vector3 targetPosition;
 
+    // 데이터
+    private float _currentHp; // max값은 나중에 생각하기 귀찮음.
+    private float _currentDamage;
+
+    public float Damage { get { return _currentDamage; } }
+
+    GameManager _gameManager;
+
     private void Awake()
     {
         _inputs = GetComponent<PlayerInputs>();
         controller = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
-        PoolManager poolManager = PoolManager.Instance;
+
+        _gameManager = GameManager.instance;
     }
 
     private void Start()
     {
         shootTimeoutDelta = shootTimeout;
-        
+        _currentHp = _data.Hp;
+        _currentDamage = _data.Damage;
+        Debug.Log($"체력 : {_data.Hp}");
+        Debug.Log($"공격력 : {_data.Damage}");
     }
 
     void Update()
@@ -156,5 +171,16 @@ public class PlayerManager : MonoBehaviour
     {
         Debug.Log("Shoot Event");
         GameManager.instance.Shoot(aimObj.position);
+    }
+
+    public void OnAttack()
+    {
+        _mob.GetComponent<NormalMobContoller>().OnDamage(_data.Damage); // 인터페이스 어쩌구로 받아오는 방법 있지 않았나..
+    }
+
+    public void OnDamage(float damage)
+    {
+        _currentHp -= damage; 
+        Debug.Log($"플레이어 체력 : {_currentHp}");
     }
 }

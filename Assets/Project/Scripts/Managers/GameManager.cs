@@ -9,7 +9,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform muzzle;
     [SerializeField] float shootTimeout = 0.2f;
     [SerializeField] NavMeshSurface meshSurface;
-    
+
+    // 방식 변경해야함
+    [SerializeField] public GameObject Player;
+    [SerializeField] public GameObject Mob;
+
     private float shootTimeoutDelta = 0.2f;
 
     //일단 간단하게 싱글톤으로

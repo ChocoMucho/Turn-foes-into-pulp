@@ -12,11 +12,11 @@ TagManager:
   - 
   - Water
   - UI
-  - Character
+  - Player
   - Debug
   - Ground
-  - 
-  - 
+  - Enemy
+  - Projectile
   - 
   - 
   - 

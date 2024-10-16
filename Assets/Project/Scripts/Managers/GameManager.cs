@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,7 +10,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform muzzle;
     [SerializeField] float shootTimeout = 0.2f;
     [SerializeField] NavMeshSurface meshSurface;
-    
+
+    // 방식 변경해야함
+    [SerializeField] public GameObject Player;
+    [SerializeField] public GameObject Mob;
+
+    [Header("이펙트 UI")]
+    [SerializeField] private Image _hitEffectImage;
+    [SerializeField] private float _fadeDuration = 1.0f;
+
+    private Color _hitColor;
+
     private float shootTimeoutDelta = 0.2f;
 
     //일단 간단하게 싱글톤으로
@@ -19,6 +30,13 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         meshSurface.BuildNavMesh();
+    }
+
+    private void Start()
+    {
+        _hitColor = _hitEffectImage.color;
+        _hitColor.a = 0f;
+        _hitEffectImage.color = _hitColor;
     }
 
     // 실제 반동주는 기능 구현하자. 지금은 애니메이션 속도에 굉장히 묶여있다.
@@ -34,5 +52,30 @@ public class GameManager : MonoBehaviour
 
         Vector3 aim = (target - muzzle.position).normalized;
         Instantiate(bulletProjectile, muzzle.position, Quaternion.LookRotation(aim, Vector3.up));
+    }
+
+
+    public void TakeDamageEffect()
+    {
+        _hitColor.a = 50f/255f;
+        _hitEffectImage.color = _hitColor;
+        StartCoroutine(FlashRed(_hitColor.a));
+    }
+
+    private IEnumerator FlashRed(float a)
+    {
+        float elapsedTime = 0f;
+
+        while(elapsedTime < _fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            _hitColor.a = Mathf.Lerp(a, 0f, elapsedTime / _fadeDuration);
+            _hitEffectImage.color = _hitColor;
+
+            yield return null;
+        }
+
+        _hitColor.a = 0f;
+        _hitEffectImage.color = _hitColor;
     }
 }

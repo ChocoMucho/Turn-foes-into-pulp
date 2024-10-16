@@ -11,7 +11,7 @@ public enum Scene
 
 public class SceneController : Singleton<SceneController>
 {
-    public void LoadBattleScene() => SceneManager.LoadScene("Battle");// 氅蜂霞璽 六六六
-
+    public void LoadBattleScene(Scene scene) => SceneManager.LoadScene(scene.ToString());// 氅蜂霞璽 六六六
+    
     public void GameExit() => Application.Quit(); 
 }

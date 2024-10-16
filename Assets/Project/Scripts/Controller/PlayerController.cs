@@ -99,6 +99,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController _controller;
     private PlayerInputs _input;
     private GameObject _mainCamera;
+    public PlayerManager playerManager;
 
     private const float _threshold = 0.01f;
 
@@ -138,6 +139,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (playerManager.IsDead)   
+            return;
         _hasAnimator = TryGetComponent(out _animator);
 
         JumpAndGravity(); // 수직 이동 값이 여기서 나와야 Move에서 사용할 수 있음.

@@ -25,9 +25,13 @@ public class PlayerManager : MonoBehaviour, IBattle
     private float shootTimeoutDelta;
 
     private PlayerInputs _inputs;
-    private PlayerController controller;
-    private Animator animator;
+    private PlayerController _controller;
+    private Animator _animator;
     private Vector3 targetPosition;
+
+    // 상태
+    private bool _isDead = false;
+    public bool IsDead { get { return _isDead; } }
 
     // 데이터
     private float _currentHp; // max값은 나중에 생각하기 귀찮음.
@@ -40,8 +44,9 @@ public class PlayerManager : MonoBehaviour, IBattle
     private void Awake()
     {
         _inputs = GetComponent<PlayerInputs>();
-        controller = GetComponent<PlayerController>();
-        animator = GetComponent<Animator>();
+        _controller = GetComponent<PlayerController>();
+        _controller.playerManager = this;
+        _animator = GetComponent<Animator>();
 
         _gameManager = GameManager.instance;
     }
@@ -57,16 +62,24 @@ public class PlayerManager : MonoBehaviour, IBattle
 
     void Update()
     {
+        if (DeathCheck())
+            return;
         AimCheck();
 
         shootTimeoutDelta += Time.deltaTime;
+    }
 
-        /*if (demoCharacterInputs.shoot)
+    private bool DeathCheck()
+    {
+        if(_isDead) return true;
+
+        if (_currentHp <= 0f)
         {
-            Vector3 vector3 = (mouseWorldPosition - projectileSpawnPosition.position).normalized;
-            Instantiate(preProjectile, projectileSpawnPosition.position, Quaternion.LookRotation(vector3, Vector3.up));
-            demoCharacterInputs.shoot = false; // 보조
-        }*/
+            _isDead = true;
+            _animator.SetBool("Death", true);
+        }
+
+        return _isDead;
     }
 
     private void AimCheck()
@@ -74,25 +87,25 @@ public class PlayerManager : MonoBehaviour, IBattle
         if(_inputs.reload)
         {
             _inputs.reload = false;
-            if (controller.IsReload) //TODO: 장전가능한지 체크하는 메서드로 묶기
+            if (_controller.IsReload) //TODO: 장전가능한지 체크하는 메서드로 묶기
                 return;
 
             AimControll(false);
             //rigging
             SetRigWeight(0);
-            animator.SetLayerWeight(1, 1); //TODO: 부드럽게 레이어 바꾸는 법..
-            animator.SetTrigger("Reload");
-            controller.IsReload = true;
+            _animator.SetLayerWeight(1, 1); //TODO: 부드럽게 레이어 바꾸는 법..
+            _animator.SetTrigger("Reload");
+            _controller.IsReload = true;
         }
 
-        if (controller.IsReload)
+        if (_controller.IsReload)
             return;
 
         // 조준 간단 구현
         if (_inputs.aim) // Yes Aiming
         {
             AimControll(true);
-            controller.SetSensitivity(zoomInSensitivity);
+            _controller.SetSensitivity(zoomInSensitivity);
 
             Transform camTransform = Camera.main.transform;
             RaycastHit hit;
@@ -114,7 +127,7 @@ public class PlayerManager : MonoBehaviour, IBattle
 
             transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
 
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
+            _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
 
             //rigging
             SetRigWeight(1);
@@ -125,7 +138,7 @@ public class PlayerManager : MonoBehaviour, IBattle
                 if(shootTimeout < shootTimeoutDelta)
                 {
                     shootTimeoutDelta = 0f;
-                    animator.SetTrigger("Shoot");
+                    _animator.SetTrigger("Shoot");
                 }
                 
             }            
@@ -133,11 +146,11 @@ public class PlayerManager : MonoBehaviour, IBattle
         else // No Aiming
         {
             AimControll(false);
-            controller.SetSensitivity(zoomOutSensitivity);
+            _controller.SetSensitivity(zoomOutSensitivity);
 
-            animator.SetLayerWeight(1, Mathf.Lerp(animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
+            _animator.SetLayerWeight(1, Mathf.Lerp(_animator.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
 
-            animator.SetBool("Shoot", false);
+            _animator.SetBool("Shoot", false);
 
             //rigging
             SetRigWeight(0);
@@ -146,15 +159,15 @@ public class PlayerManager : MonoBehaviour, IBattle
 
     private void AimControll(bool isAim) //TODO 얘도 컨트롤러로 빼기
     {
-        controller.IsAim = isAim;
+        _controller.IsAim = isAim;
         playerAimCamera.gameObject.SetActive(isAim);
         crosshair.SetActive(isAim);
     }
 
     public void Reload() //리로드 애니메이션 끝나갈 때 호출할 리셋 함수
     {
-        controller.IsReload = false;
-        animator.SetLayerWeight(1, 0);
+        _controller.IsReload = false;
+        _animator.SetLayerWeight(1, 0);
         Debug.Log("Reload");
 
         //rigging
@@ -182,5 +195,7 @@ public class PlayerManager : MonoBehaviour, IBattle
     {
         _currentHp -= damage; 
         Debug.Log($"플레이어 체력 : {_currentHp}");
+
+        GameManager.instance.TakeDamageEffect();
     }
 }

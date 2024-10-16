@@ -46,9 +46,9 @@ public class NormalMobContoller : MonoBehaviour, IBattle
     // Update is called once per frame
     void Update()
     {
+        DeadCheck();
         TraceCheck();
         WalkAnimationBlend();
-        DeadCheck();
     }
 
     private void AssignAnimationIDs() // 애니메이션 id를 string에서int로
@@ -95,6 +95,7 @@ public class NormalMobContoller : MonoBehaviour, IBattle
     {
         if(_currentHp <= 0f)
         {
+            _isDead = true;
             _animator.SetBool(_animIDDead, true);
             _agent.Stop();
         }

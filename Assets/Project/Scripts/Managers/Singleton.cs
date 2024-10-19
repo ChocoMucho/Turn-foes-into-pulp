@@ -31,7 +31,8 @@ public class Singleton<T> : MonoBehaviour where T : Singleton<T>
 
     protected virtual void OnDestroy()
     {
-        Dispose();
+        if (_isDestroyOnLoad)
+            Dispose();
     }
 
     protected virtual void Dispose()

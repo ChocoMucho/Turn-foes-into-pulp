@@ -77,6 +77,8 @@ public class PlayerManager : MonoBehaviour, IBattle
         {
             _isDead = true;
             _animator.SetBool("Death", true);
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
 
         return _isDead;

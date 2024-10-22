@@ -3,10 +3,13 @@ using UnityEngine.EventSystems;
 
 public abstract class BaseScene : MonoBehaviour
 {
-    public Define.Scene SceneType { get; protected set; } = Define.Scene.Unknown;
+    protected Managers manager;
+
+    public Define.Scene SceneType { get; protected set; } = Define.Scene.Unknown;    
 
     private void Start()
     {
+        manager = Managers.Instance;
         Init();
     }
 

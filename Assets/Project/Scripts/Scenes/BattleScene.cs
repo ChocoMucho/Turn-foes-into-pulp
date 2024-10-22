@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,14 +14,8 @@ public class BattleScene : BaseScene
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        _lobbybutton.onClick.AddListener(() =>
-        {
-            if (SceneManagerExtend.Instance != null)
-                SceneManagerExtend.Instance.LoadScene(Define.Scene.Lobby);
-            else
-                Debug.LogError("씬 매니저(확장)가 비어있음.");
-        } );
-        _battlebutton.onClick.AddListener(() => SceneManagerExtend.Instance.LoadScene(Define.Scene.Battle));
+        _lobbybutton.onClick.AddListener(() => Managers.Scene.LoadScene(Define.Scene.Lobby));
+        _battlebutton.onClick.AddListener(() => Managers.Scene.LoadScene(Define.Scene.Battle));
     }
 
     public override void Clear()

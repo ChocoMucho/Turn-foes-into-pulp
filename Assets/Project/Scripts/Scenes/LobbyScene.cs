@@ -9,7 +9,7 @@ public class LobbyScene : BaseScene
     {
         base.Init();
         SceneType = Define.Scene.Lobby;
-        _battlebutton.onClick.AddListener(() => SceneManagerExtend.Instance.LoadScene(Define.Scene.Battle));
+        _battlebutton.onClick.AddListener(() => Managers.Scene.LoadScene(Define.Scene.Battle));
     }
     public override void Clear()
     {

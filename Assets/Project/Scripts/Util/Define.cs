@@ -6,4 +6,16 @@ public class Define
         Lobby,
         Battle,
     }
+
+    public enum PlayerStates
+    {
+        Ground,
+        Air,
+
+        Move,
+        Dodge,
+
+        NonCombat,
+        Shoot, // 이름 변경
+    }
 }

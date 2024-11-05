@@ -10,7 +10,6 @@ public class PlayerInputs : MonoBehaviour // 입력 값들을 받아놓는 바구니 역할
     public Vector2 move;
     public Vector2 look;
     public bool jump;
-    public bool run;
     public bool aim;
     public bool shoot;
     public bool dodge;
@@ -33,7 +32,6 @@ public class PlayerInputs : MonoBehaviour // 입력 값들을 받아놓는 바구니 역할
             LookInput(value.Get<Vector2>());
     }
     public void OnJump(InputValue value) => JumpInput(value.isPressed);
-    public void OnRun(InputValue value) => RunInput(value.isPressed);
     public void OnAim(InputValue value) => AimInput(value.isPressed);
     public void OnShoot(InputValue value) => ShootInput(value.isPressed);
     public void OnReload(InputValue value) => ReloadInput(value.isPressed);
@@ -44,7 +42,6 @@ public class PlayerInputs : MonoBehaviour // 입력 값들을 받아놓는 바구니 역할
     public void MoveInput(Vector2 moveDirection) => move = moveDirection;
     public void LookInput(Vector2 lookDirection) => look = lookDirection;
     private void JumpInput(bool isPressed) => jump = isPressed;
-    private void RunInput(bool isPressed) => run = isPressed;
     private void AimInput(bool isPressed) => aim = isPressed;
     private void ShootInput(bool isPressed) => shoot = isPressed;
     private void ReloadInput(bool isPressed) => reload = isPressed;

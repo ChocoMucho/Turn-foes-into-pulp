@@ -34,7 +34,7 @@ public class BulletProjectile : MonoBehaviour
             IBattle battle = other.GetComponent<IBattle>();
             if(battle != null)
             {
-                battle.OnDamage(GameManager.instance.Player.GetComponent<PlayerManager>().Damage); // 진짜 너무 더럽다.
+                battle.OnDamage(GameManager.instance.Player.GetComponent<Player>().Damage); // 진짜 너무 더럽다.
             }
         }
         Destroy(gameObject);

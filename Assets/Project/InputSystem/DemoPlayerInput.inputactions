@@ -33,15 +33,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Run",
-                    "type": "PassThrough",
-                    "id": "0b857675-65fc-4d03-b06a-0b43434721e7",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Aim",
                     "type": "PassThrough",
                     "id": "17f8248a-8d82-4499-9825-3bad4881783a",
@@ -148,7 +139,7 @@
                 {
                     "name": "",
                     "id": "8ea9408c-524a-4003-a3ca-e4a4485a9c28",
-                    "path": "<Keyboard>/ctrl",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -175,17 +166,6 @@
                     "processors": "InvertVector2(invertX=false)",
                     "groups": "",
                     "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "369ec282-f30e-4b4b-b37c-507a7fba4a18",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Run",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

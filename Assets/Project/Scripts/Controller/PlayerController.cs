@@ -1,105 +1,79 @@
 ﻿using StarterAssets;
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.FilePathAttribute;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerController : MonoBehaviour
 {
     [Header("플레이어 움직임 관련 값")]
-    [Tooltip("이동 속도 m/s")]
-    public float MoveSpeed = 2.0f;
-
-    [Tooltip("뛰는 속도 m/s")]
-    public float RunSpeed = 6.0f;
-
-    [Tooltip("회전 속도: 클수록 방향 전환 시 더 느리게 회전함")]
+    public float MoveSpeed = 5.0f;              // 이동 속도 m/s
+    public float RunSpeed = 6.0f;               // 뛰는 속도 m/s
+    public float DodgeSpeed = 6f;
     [Range(0.0f, 0.3f)]
-    public float RotationSmoothTime = 0.12f;
+    public float RotationSmoothTime = 0.12f;    // 회전 속도: 클수록 방향 전환 시 더 느리게 회전함
+    public float SpeedChangeRate = 10.0f;       // 속도가 빨라지는 정도
+    public float Sensitivity = 1.0f;            // 카메라 움직임 
 
-    [Tooltip("속도가 빨라지는 정도")]
-    public float SpeedChangeRate = 10.0f;
+    public float JumpHeight = 1.2f;             // 점프하는 높이
+    public float Gravity = -15.0f;              // 캐릭터만의 고유 중력. 엔진 기본 값 -9.81f
 
-    [Tooltip("카메라 움직임 민감도")]
-    public float Sensitivity = 1.0f;
+    public float JumpTimeout = 0.5f;           // 다시 점프할 수 있기까지 소요되는 시간
+    public float FallTimeout = 0.15f;           // 낙하 상태로 들어가기까지 소요되는 시간
+    public float DodgeTimeout = 0.5f;
+    [SerializeField] public float DodgeTime = 0.5f;
 
-
-    [Space(10)]
-    [Tooltip("점프하는 높이")]
-    public float JumpHeight = 1.2f;
-
-    [Tooltip("캐릭터만의 고유 중력. 엔진 기본 값 -9.81f")]
-    public float Gravity = -15.0f;
-
-    [Space(10)]
-    [Tooltip("다시 점프할 수 있기까지 소요되는 시간")]
-    public float JumpTimeout = 0.50f;
-
-    [Tooltip("낙하 상태로 들어가기까지 소요되는 시간")]
-    public float FallTimeout = 0.15f;
 
     [Header("플레이어 지면")]
-    [Tooltip("캐릭터가 땅에 닿아 있는지. CharacterController와는 무관")]
-    public bool Grounded = true;
+    private bool _isGround = true;              // 캐릭터가 땅에 닿아 있는지. 직접 체크
+    public float GroundedOffset = -0.14f;       // 거친 지형에 유용
+    public float GroundedRadius = 0.28f;        // 접지 확인 반지름, CharacterController의 반지름과 일치해야함
+    public LayerMask GroundLayers;              // 지면으로 사용할 레이어
 
-    [Tooltip("거친 지형에 유용")]
-    public float GroundedOffset = -0.14f;
-
-    [Tooltip("접지 확인의 반지름, CharacterController의 반지름과 일치해야함")]
-    public float GroundedRadius = 0.28f;
-
-    [Tooltip("지면으로 사용할 레이어")]
-    public LayerMask GroundLayers;
 
     [Header("시네머신")]
-    [Tooltip("시네머신 가상 카메라에 설정된 추적 대상")]
-    public GameObject CinemachineCameraTarget;
+    public GameObject CinemachineCameraTarget;  // 시네머신 가상 카메라에 설정된 추적 대상
+    public float TopClamp = 70.0f;              // 카메라를 위로 올릴 수 있는 각도
+    public float BottomClamp = -30.0f;          // 카메라를 아래로 내릴 수 있는 각도
+    public float CameraAngleOverride = 0.0f; // 카메라를 오버라이드하는 추가 각도. 잠길 때 카메라 위치를 미세 조정하는 데 유용합니다
+    public bool LockCameraPosition = false;     // 모든 축에서 카메라 위치를 고정하기 위한 설정
 
-    [Tooltip("카메라를 위로 올릴 수 있는 각도")]
-    public float TopClamp = 70.0f;
+    // ==========컨트롤러 값 프로퍼티==========
+    public bool IsGround { get { return _isGround; } }
 
-    [Tooltip("카메라를 아래로 내릴 수 있는 각도")]
-    public float BottomClamp = -30.0f;
-
-    [Tooltip("카메라를 오버라이드하는 추가 각도. 잠길 때 카메라 위치를 미세 조정하는 데 유용합니다")]
-    public float CameraAngleOverride = 0.0f;
-
-    [Tooltip("모든 축에서 카메라 위치를 고정하기 위한 설정")]
-    public bool LockCameraPosition = false;
-
-    // cinemachine 
+    // ==========cinemachine==========
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
 
-    // player
+    // ==========player move value==========
     private float _speed;
     private float _animationBlend;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
     private float _verticalVelocity; // 수직 속도 -> 점프에서 활용
     private float _terminalVelocity = 53.0f;
-    // 프로퍼티
+    private Vector3 _inputDirection;
+
+    // ==========상태==========
     public bool IsAim { get; set; } = false;
     public bool IsReload { get; set; } = false;
+    public bool IsDodging { get; set; } = false;
 
-    // timeout deltatime
-    private float _jumpTimeoutDelta;
-    private float _fallTimeoutDelta;
+    // ==========timeout deltatime==========
+    public float JumpTimeoutDelta { get; private set; }
+    public float FallTimeoutDelta { get; set; }
+    public float DodgeTimeoutDelta { get; private set; }  
 
-    // animation IDs
-    private int _animIDSpeed; // 블렌드 트리의 블렌드 값
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDMotionSpeed; //블렌드 트리의 멀티플라이어 값으로 쓰임
-
+    // ==========참조==========
     private PlayerInput _playerInput; //큰 의미X 애니 속도 체크
     private Animator _animator;
     private CharacterController _controller;
     private PlayerInputs _input;
     private GameObject _mainCamera;
-    public PlayerManager playerManager;
+    private Player _player;
 
     private const float _threshold = 0.01f;
 
@@ -129,23 +103,37 @@ public class PlayerController : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<PlayerInputs>();
         _playerInput = GetComponent<PlayerInput>();
+        _player = GetComponent<Player>();
 
-        AssignAnimationIDs();
 
         // 점프 관련 수치 리셋
-        _jumpTimeoutDelta = JumpTimeout;
-        _fallTimeoutDelta = FallTimeout;
+        JumpTimeoutDelta = JumpTimeout;
+        FallTimeoutDelta = FallTimeout;
     }
 
     void Update()
     {
-        if (playerManager.IsDead)   
+        if (_player.IsDead)   
             return;
         _hasAnimator = TryGetComponent(out _animator);
 
         JumpAndGravity(); // 수직 이동 값이 여기서 나와야 Move에서 사용할 수 있음.
+        CapturePlayerDirection();
         GroundedCheck();
         Move();
+        Dodge();
+    }    
+
+    private void CapturePlayerDirection() // 입력 값과 y축 회전 값 받아놓음
+    {
+        _inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
+
+        if (_input.move != Vector2.zero)
+        {
+            // x와 z방향 값으로 y축 회전 값을 구해냄 | 카메라 방향을 더해서 카메라 방향 기준 회전 방향 구함
+            _targetRotation = Mathf.Atan2(_inputDirection.x, _inputDirection.z) * Mathf.Rad2Deg +
+                              _mainCamera.transform.eulerAngles.y;
+        }
     }
 
     private void LateUpdate()
@@ -153,27 +141,14 @@ public class PlayerController : MonoBehaviour
         CameraRotation();
     }    
 
-    private void AssignAnimationIDs() // 애니메이션 id를 string에서int로
-    {
-        _animIDSpeed = Animator.StringToHash("Speed"); // 블렌드 트리에 쓰이는 값
-        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-        _animIDGrounded = Animator.StringToHash("Grounded");
-        _animIDJump = Animator.StringToHash("Jump");
-        _animIDFreeFall = Animator.StringToHash("Fall");
-    }
-
     private void GroundedCheck()
     {
         // 캐릭터의 발 끝 위치를 [접지 체크 구체]의 중심으로 잡는다.
         Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
             transform.position.z);
         // [접지 체크 구체]가 땅에 닿는지 체크한다.
-        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+        _isGround = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
             QueryTriggerInteraction.Ignore);
-
-        // 착지하는 애니메이션을 재생한다.
-        if (_hasAnimator)
-            _animator.SetBool(_animIDGrounded, Grounded);
     }
 
     private void CameraRotation()
@@ -201,16 +176,56 @@ public class PlayerController : MonoBehaviour
             _cinemachineTargetYaw, 0.0f);
     }
 
+    private void JumpAndGravity()
+    {
+        if (_isGround)
+        {
+            // 낙하 상태 돌입까지의 시간 대입
+            FallTimeoutDelta = FallTimeout;
+
+            // 수직 속도 -2로 해서 땅에 붙어있게 함
+            if (_verticalVelocity < 0.0f)
+            {
+                _verticalVelocity = -2f;
+            }
+
+            // 점프 로직
+            if (_input.jump && JumpTimeoutDelta <= 0.0f)
+            {
+                // 수직 속도 계산
+                _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+            }
+
+            // 점프 타이머 활성화
+            // 지면에 착지 후에 일정 시간 흐른 후에 점프가 가능하도록 함
+            if (JumpTimeoutDelta >= 0.0f)
+            {
+                JumpTimeoutDelta -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            // 점프 타이머 재설정
+            JumpTimeoutDelta = JumpTimeout;
+
+            // 공중에 있을 때 불필요한 점프 방지
+            _input.jump = false;
+        }
+
+        // 수직 속도가 최대 속도보다 작은 경우
+        if (_verticalVelocity < _terminalVelocity)
+        {
+            _verticalVelocity += Gravity * Time.deltaTime; // 수직 속도 프레임마다 중력만큼 감소 
+        }
+    }
+
     private void Move()
     {
-        // 달리는 중이면 RunSpeed, 아니면 MoveSpeed
-        float targetSpeed = 0;
+        if (IsDodging)
+            return;
 
-        // 조준 중일 때 타겟 스피드 movespeed
-        if (IsAim || IsReload)
-            targetSpeed = MoveSpeed;
-        else
-            targetSpeed = _input.run ? RunSpeed : MoveSpeed;
+        // 달리는 중이면 RunSpeed, 아니면 MoveSpeed
+        float targetSpeed = MoveSpeed;
 
         // 입력 없음 목표 속도 == 0;
         if (_input.move == Vector2.zero) targetSpeed = 0.0f;
@@ -241,14 +256,8 @@ public class PlayerController : MonoBehaviour
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * SpeedChangeRate);
         if (_animationBlend < 0.01f) _animationBlend = 0f; // 블렌드 값은 아무리 높아도 상관 없음
 
-        // 입력 방향 정규화
-        Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
         if (_input.move != Vector2.zero)
         {
-            // x와 z방향 값으로 y축 회전 값을 구해냄 | 카메라 방향을 더해서 카메라 방향 기준 회전 방향 구함
-            _targetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
-                              _mainCamera.transform.eulerAngles.y;
             // 부드러운 회전을 위한 값을 구함
             float rotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, _targetRotation, ref _rotationVelocity,
                 RotationSmoothTime);
@@ -268,78 +277,71 @@ public class PlayerController : MonoBehaviour
         // 블렌드 값으로 
         if (_hasAnimator)
         {
-            _animator.SetFloat(_animIDSpeed, _animationBlend); //TODO 블렌드는 그냥 blend라고 명시하는게 나을듯
-            _animator.SetFloat(_animIDMotionSpeed, inputMagnitude); 
+            _animator.SetFloat(_player.AnimationHash.Speed, _animationBlend); //TODO 블렌드는 그냥 blend라고 명시하는게 나을듯
+            _animator.SetFloat(_player.AnimationHash.MotionSpeed, inputMagnitude); 
         }
     }
 
-    private void JumpAndGravity()
+    private void Dodge()
     {
-        if (Grounded)
+        if(!IsDodging)
         {
-            // 낙하 상태 돌입까지의 시간 대입
-            _fallTimeoutDelta = FallTimeout;
-
-            // 점프, 낙하 애니메이션 비활성화
-            if (_hasAnimator)
-            {
-                _animator.SetBool(_animIDJump, false);
-                _animator.SetBool(_animIDFreeFall, false);
+            if (_input.dodge && DodgeTimeoutDelta <= 0.0f)
+            {                
+                IsDodging = true;
+                _speed = DodgeSpeed;
+                StartCoroutine(CO_Dodge());
             }
 
-            // 수직 속도 -2로 해서 땅에 붙어있게 함
-            if (_verticalVelocity < 0.0f)
+            if (DodgeTimeoutDelta >= 0.0f)
             {
-                _verticalVelocity = -2f;
-            }
-
-            // 점프 로직
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-            {
-                // 수직 속도 계산
-                _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-
-                // 점프 애니메이션 활성화
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDJump, true);
-                }
-            }
-
-            // 점프 타이머 활성화
-            // 지면에 착지 후에 일정 시간 흐른 후에 점프가 가능하도록 함
-            if (_jumpTimeoutDelta >= 0.0f)
-            {
-                _jumpTimeoutDelta -= Time.deltaTime;
+                DodgeTimeoutDelta -= Time.deltaTime;
             }
         }
         else
         {
-            // 점프 타이머 재설정
-            _jumpTimeoutDelta = JumpTimeout;
-
-            // _fallTimeoutDelta이 0보다 작아지면 낙하 애니메이션 활성화
-            if (_fallTimeoutDelta >= 0.0f)
-            {
-                _fallTimeoutDelta -= Time.deltaTime;
-            }
-            else
-            {
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDFreeFall, true);
-                }
-            }
-
-            // 공중에 있을 때 불필요한 점프 방지
-            _input.jump = false;
+            DodgeTimeoutDelta = DodgeTimeout;
+            _input.dodge = false;
         }
+    }
 
-        // 수직 속도가 최대 속도보다 작은 경우
-        if (_verticalVelocity < _terminalVelocity)
+    IEnumerator CO_Dodge()
+    {
+        float elapsedTime = 0.0f;
+        
+        Vector3 targetDirection;
+        float targetRotation;
+
+        // 입력 방향 없을 경우
+        // 카메라 방향을 목표하는 방향으로
+
+
+        if (_input.move != Vector2.zero) // 입력 방향 있을 경우
         {
-            _verticalVelocity += Gravity * Time.deltaTime; // 수직 속도 프레임마다 중력만큼 감소 
+            targetRotation = _targetRotation;
         }
+        else // 입력 방향 없을 경우
+        {
+            targetRotation = _mainCamera.transform.eulerAngles.y;
+        }
+        transform.rotation = Quaternion.Euler(0.0f, targetRotation, 0.0f);
+
+        targetDirection = Quaternion.Euler(0.0f, targetRotation, 0.0f) * Vector3.forward;
+
+        while (elapsedTime < DodgeTime)  // TODO: 
+        {
+            elapsedTime += Time.deltaTime;
+
+            _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
+                        new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+
+            yield return null;
+        }
+
+        IsDodging = false;
+        _speed = MoveSpeed;
+
+        yield return null;
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -356,7 +358,7 @@ public class PlayerController : MonoBehaviour
         Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
         Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
 
-        if (Grounded) Gizmos.color = transparentGreen;
+        if (_isGround) Gizmos.color = transparentGreen;
         else Gizmos.color = transparentRed;
 
         // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider

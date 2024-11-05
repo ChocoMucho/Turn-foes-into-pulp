@@ -84,7 +84,7 @@ public class NormalMobContoller : MonoBehaviour, IBattle
 
     public void OnAttack() // 애니메이션 이벤트에 추가해줄 친구.
     {
-        _gameManager.Player.GetComponent<PlayerManager>().OnDamage(_data.Damage); // 가져오는 방법 구림!
+        _gameManager.Player.GetComponent<Player>().OnDamage(_data.Damage); // 가져오는 방법 구림!
 
     }
     public void OnDamage(float damage)

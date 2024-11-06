@@ -14,8 +14,17 @@ public class BattleScene : BaseScene
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
-        _lobbybutton.onClick.AddListener(() => Managers.Scene.LoadScene(Define.Scene.Lobby));
-        _battlebutton.onClick.AddListener(() => Managers.Scene.LoadScene(Define.Scene.Battle));
+        _lobbybutton.onClick.AddListener(() => SceneManagerExtend.Instance.LoadScene(Define.Scene.Lobby));
+        _battlebutton.onClick.AddListener(() => SceneManagerExtend.Instance.LoadScene(Define.Scene.Battle));
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
+        }
     }
 
     public override void Clear()

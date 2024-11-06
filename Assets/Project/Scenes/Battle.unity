@@ -646,7 +646,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42692
+  m_Name: pb_Mesh29758
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -836,7 +836,7 @@ Transform:
   m_Children:
   - {fileID: 517145456}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &53422321
 MonoBehaviour:
@@ -1958,7 +1958,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: BattleButton
+  m_Text: RetryButton
 --- !u!222 &231390324
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3345,7 +3345,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &434304430
 GameObject:
@@ -3911,7 +3911,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &547567663
 GameObject:
@@ -4701,7 +4701,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-21902
+  m_Name: pb_Mesh29946
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -5672,7 +5672,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &823579058
 GameObject:
@@ -5711,7 +5711,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42688
+  m_Name: pb_Mesh29662
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -6130,7 +6130,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42684
+  m_Name: pb_Mesh29614
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -6532,7 +6532,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &1085976340
 MonoBehaviour:
@@ -7080,7 +7080,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42682
+  m_Name: pb_Mesh29894
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -7597,7 +7597,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-32930
+  m_Name: pb_Mesh29728
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -7762,7 +7762,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-22646
+  m_Name: pb_Mesh29926
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -8687,7 +8687,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1279741964
 GameObject:
@@ -9080,7 +9080,7 @@ Transform:
   - {fileID: 277401023}
   - {fileID: 1702030695}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1324076250
 GameObject:
@@ -10287,7 +10287,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-36186
+  m_Name: pb_Mesh29878
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -10688,7 +10688,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1471045569
 MonoBehaviour:
@@ -10717,7 +10717,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42690
+  m_Name: pb_Mesh29964
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -11730,7 +11730,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42694
+  m_Name: pb_Mesh29978
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -11948,8 +11948,9 @@ GameObject:
   - component: {fileID: 1668371460}
   - component: {fileID: 1668371459}
   - component: {fileID: 1668371458}
+  - component: {fileID: 1668371461}
   m_Layer: 5
-  m_Name: BattleButton
+  m_Name: RetryButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12058,6 +12059,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1668371456}
   m_CullTransparentMesh: 1
+--- !u!114 &1668371461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668371456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 792841b9367a70943bc7e37302091c99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1682670526
 GameObject:
   m_ObjectHideFlags: 0
@@ -12070,6 +12083,7 @@ GameObject:
   - component: {fileID: 1682670530}
   - component: {fileID: 1682670529}
   - component: {fileID: 1682670528}
+  - component: {fileID: 1682670531}
   m_Layer: 5
   m_Name: LobbyButton
   m_TagString: Untagged
@@ -12180,6 +12194,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682670526}
   m_CullTransparentMesh: 1
+--- !u!114 &1682670531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682670526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba780ba3c3a2b943b1cb24b22bcb847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1702030694
 GameObject:
   m_ObjectHideFlags: 0
@@ -14135,7 +14161,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-31696
+  m_Name: pb_Mesh29582
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -14459,7 +14485,7 @@ GameObject:
   - component: {fileID: 1908333246}
   - component: {fileID: 1908333245}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14545,7 +14571,7 @@ RectTransform:
   - {fileID: 1682670527}
   - {fileID: 1668371457}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -14663,7 +14689,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-36188
+  m_Name: pb_Mesh29692
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -14828,7 +14854,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-18720
+  m_Name: pb_Mesh30046
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -15057,7 +15083,7 @@ Transform:
   m_Children:
   - {fileID: 759982160}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2125720772
 GameObject:
@@ -15289,7 +15315,7 @@ Transform:
   - {fileID: 4349290351265499812}
   - {fileID: 1920852890933874688}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &366175167877582143
 Transform:
@@ -15440,7 +15466,7 @@ Transform:
   - {fileID: 379530083}
   - {fileID: 177551593}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: -179.087, z: 0}
 --- !u!1 &544535697794673105
 GameObject:

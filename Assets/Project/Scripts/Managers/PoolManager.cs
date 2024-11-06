@@ -9,7 +9,7 @@ public class PoolManager : Singleton<PoolManager>
     Dictionary<string, Pool> _pool;
     Transform _root;
 
-    protected override void Init()
+    public override void Init()
     {
         base.Init();
         _pool = new Dictionary<string, Pool>();
